@@ -7,14 +7,19 @@ describe Rack::OAuth2Utils::Middleware do
   OK_RESPONSE = [200, {'Content-Type' => 'text/plain'}, ['Hello world']]
   FORBIDDEN_RESPONSE = [403, {'Content-Type' => 'text/plain'}, ['Nono']]
   
+  IDENTITIES = {
+    # token      # identity
+    'aaaaa'   => 'ismasan',
+    'bbbbb'   => 'sachi'
+  }
+  
   def app
     @app ||= Rack::Builder.new do
       # Simple token / identity store
-      use Rack::OAuth2Utils::Middleware, :store => {
-        # token      # identity
-        'aaaaa'   => 'ismasan',
-        'bbbbb'   => 'sachi'
-      }
+      use Rack::OAuth2Utils::Middleware do |access_token|
+        IDENTITIES[access_token]
+      end
+      
       # Public endpoint
       map('/public'){
         run lambda {|env| OK_RESPONSE } 

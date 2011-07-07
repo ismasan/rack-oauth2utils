@@ -7,7 +7,10 @@ This gem only covers the simple use of "using a token". You must implement the a
 ## USAGE
 
     class API < Sinatra::Base
-      use Rack::OAuth2Utils::Middleware, :store => SomeKeyValueStore
+    
+      use Rack::OAuth2Utils::Middleware do |access_token|
+        AccessToken.find_by_token(access_token).try :account_id
+      end
       
       helpers do
           
@@ -36,15 +39,17 @@ This gem only covers the simple use of "using a token". You must implement the a
       
     end
     
-:store is anything that responds to [], []= and delete. Can be Redis, PStore, some ORM wrapper, etc.
-
-Store is expected to store access_tokens mapped to some identity string (for example account IDs).
+Rack::OAuth2Utils::Middleware takes a block with the request's access token. YOu can use it to resolve it to an identity string (ie a user or account id).
 
 There is a test store based on PStore (filesystem. Do no use in production):
 
-    store = Rack::OAuth2Utils::TestStore.new('tmp/access_tokens.store')
+    STORE = Rack::OAuth2Utils::TestStore.new('tmp/access_tokens.store')
     
-    store['some_access_token'] = 'some_account_id'
+    STORE['foobar'] = 'some_identity'
+    
+    use Rack::OAuth2Utils::Middleware do |access_token|
+      STORE[access_token]
+    end
 
 It is up to you how you store tokens and identities. 
 

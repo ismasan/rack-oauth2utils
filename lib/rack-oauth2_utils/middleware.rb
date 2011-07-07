@@ -3,13 +3,11 @@ module Rack
     
     class Middleware
       
-      attr_reader :store
-      
-      def initialize(app, options = {})
+      def initialize(app, options = {}, &resolver)
         @app = app
-        @store = options[:store] || {}
         @realm = options[:realm]
         @logger = options[:logger]
+        @resolver = resolver
       end
       
       def call(env)
@@ -20,7 +18,7 @@ module Rack
         return @app.call(env) unless request.oauth?
         
         # Fetch identity
-        if identity = store[request.access_token] # identity found, forward to backend
+        if identity = @resolver.call(request.access_token) # identity found, forward to backend
           env["oauth.identity"] = identity
           logger.info "RO2U: Authorized #{identity}" if logger
         else # invalid token
