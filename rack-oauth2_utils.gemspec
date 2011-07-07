@@ -6,11 +6,11 @@ Gem::Specification.new do |s|
   s.name        = "rack-oauth2_utils"
   s.version     = Rack::OAuth2Utils::VERSION
   s.platform    = Gem::Platform::RUBY
-  s.authors     = ["TODO: Write your name"]
-  s.email       = ["TODO: Write your email address"]
+  s.authors     = ["Ismael Celis"]
+  s.email       = ["ismaelct@gmail.com"]
   s.homepage    = ""
-  s.summary     = %q{TODO: Write a gem summary}
-  s.description = %q{TODO: Write a gem description}
+  s.summary     = %q{Middleware for catching OAuth2 access tokens in Rack apps}
+  s.description = %q{Simple Rack middleware that catches OAuth2 access tokens and validates identity}
 
   s.rubyforge_project = "rack-oauth2_utils"
   
