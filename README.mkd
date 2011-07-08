@@ -43,6 +43,7 @@ This gem only covers the simple use of "using a token". You must implement the a
 Rack::OAuth2Utils::Middleware takes a block with the request's access token. YOu can use it to resolve it to an identity string (ie a user or account id).
 
 There is a test store based on PStore (filesystem. Do no use in production):
+
 ```ruby
     STORE = Rack::OAuth2Utils::TestStore.new('tmp/access_tokens.store')
     
@@ -52,6 +53,7 @@ There is a test store based on PStore (filesystem. Do no use in production):
       STORE[access_token]
     end
 ```
+
 It is up to you how you store tokens and identities. 
 
 
