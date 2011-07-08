@@ -6,38 +6,38 @@ This gem only covers the simple use of "using a token". You must implement the a
 
 ## USAGE
 ```ruby
-    class API < Sinatra::Base
-    
-      use Rack::OAuth2Utils::Middleware do |access_token|
-        AccessToken.find_by_token(access_token).try :account_id
-      end
+class API < Sinatra::Base
+
+  use Rack::OAuth2Utils::Middleware do |access_token|
+    AccessToken.find_by_token(access_token).try :account_id
+  end
+  
+  helpers do
       
-      helpers do
-          
-        def authorized?
-          !!identity
-        end
-        
-        def identity
-         requets.env['oauth.identity']
-        end
-        
-        def current_account
-         Account.find(identity) if authorized?
-        end
-         
-      end
-      
-      get '/private' do
-        if authorized?
-          content_type 'application/json'
-          current_account.to_json
-        else
-          halt 403, 'Access forbidden'
-        end
-      end
-      
+    def authorized?
+      !!identity
     end
+    
+    def identity
+     requets.env['oauth.identity']
+    end
+    
+    def current_account
+     Account.find(identity) if authorized?
+    end
+     
+  end
+  
+  get '/private' do
+    if authorized?
+      content_type 'application/json'
+      current_account.to_json
+    else
+      halt 403, 'Access forbidden'
+    end
+  end
+  
+end
 ```
     
 Rack::OAuth2Utils::Middleware takes a block with the request's access token. YOu can use it to resolve it to an identity string (ie a user or account id).
@@ -45,13 +45,13 @@ Rack::OAuth2Utils::Middleware takes a block with the request's access token. YOu
 There is a test store based on PStore (filesystem. Do no use in production):
 
 ```ruby
-    STORE = Rack::OAuth2Utils::TestStore.new('tmp/access_tokens.store')
-    
-    STORE['foobar'] = 'some_identity'
-    
-    use Rack::OAuth2Utils::Middleware do |access_token|
-      STORE[access_token]
-    end
+STORE = Rack::OAuth2Utils::TestStore.new('tmp/access_tokens.store')
+
+STORE['foobar'] = 'some_identity'
+
+use Rack::OAuth2Utils::Middleware do |access_token|
+  STORE[access_token]
+end
 ```
 
 It is up to you how you store tokens and identities. 
