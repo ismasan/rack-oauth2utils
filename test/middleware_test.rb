@@ -127,7 +127,7 @@ describe Rack::OAuth2Utils::Middleware do
   end
   
   describe 'with valid token as query param' do
-    before {get '/private', 'oauth_token' => 'aaaaa'}
+    before {get '/private', 'access_token' => 'aaaaa'}
     
     it 'should return 200 Ok' do
       last_response.status.must_equal 200

@@ -22,7 +22,7 @@ module Rack
       end
       
       def authorization_param
-        @authorization_param ||= self.GET['oauth_token']
+        @authorization_param ||= self.GET['access_token']
       end
 
       # True if authentication scheme is OAuth.
