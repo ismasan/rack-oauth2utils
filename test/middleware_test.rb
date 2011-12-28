@@ -137,5 +137,17 @@ describe Rack::OAuth2Utils::Middleware do
       last_response.body.must_equal 'Hello world'
     end
   end
+  
+  describe 'with alternative valid token as query param named "bearer_token"' do
+    before {get '/private', 'access_token' => 'aaaaa'}
+    
+    it 'should return 200 Ok' do
+      last_response.status.must_equal 200
+    end
+    
+    it 'should return body' do
+      last_response.body.must_equal 'Hello world'
+    end
+  end
 
 end
