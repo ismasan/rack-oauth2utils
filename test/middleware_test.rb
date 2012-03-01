@@ -80,6 +80,14 @@ describe Rack::OAuth2Utils::Middleware do
       it 'should return WWW-Authenticate header with realm and error info' do
         last_response.headers['WWW-Authenticate'].must_equal "OAuth realm=\"example.org\", error=\"invalid_token\", error_description=\"The access token is invalid.\""
       end
+      
+      it 'should have default content type' do
+        last_response.headers['Content-Type'].must_equal 'text/plain'
+      end
+      
+      it 'should have default error explanation in the body' do
+        last_response.body.must_equal 'The access token is invalid.'
+      end
     end
     
     describe 'private resource' do
@@ -93,6 +101,47 @@ describe Rack::OAuth2Utils::Middleware do
         last_response.headers['WWW-Authenticate'].must_equal "OAuth realm=\"example.org\", error=\"invalid_token\", error_description=\"The access token is invalid.\""
       end
     end
+  end
+  
+  describe ':invalid_token_response' do
+    def app
+      invalid = [{'Content-Type' => 'application/json'}, ['{"error": "Invalid token"}']]
+      Rack::Builder.new do
+        # Simple token / identity store
+        use Rack::OAuth2Utils::Middleware, :invalid_token_response => invalid do |access_token|
+          IDENTITIES[access_token]
+        end
+        
+        # Private, or auth protected
+        map('/private'){
+          run lambda {|env| 
+           OK_RESPONSE   
+          } 
+        }
+      end
+    end
+    
+    before {
+      header "Authorization", "OAuth invalidtoken"
+      get '/private'
+    }
+    
+    it 'should return 401 Unauthorized' do
+      last_response.status.must_equal 401
+    end
+    
+    it 'should return WWW-Authenticate header with realm and error info' do
+      last_response.headers['WWW-Authenticate'].must_equal "OAuth realm=\"example.org\", error=\"invalid_token\", error_description=\"The access token is invalid.\""
+    end
+    
+    it 'should have set content type' do
+      last_response.headers['Content-Type'].must_equal 'application/json'
+    end
+    
+    it 'should have default error explanation in the body' do
+      last_response.body.must_equal '{"error": "Invalid token"}'
+    end
+    
   end
   
   describe 'with valid token' do
