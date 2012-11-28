@@ -8,13 +8,15 @@ module Rack
     class OAuthRequest < Rack::Request
 
       AUTHORIZATION_KEYS = %w{HTTP_AUTHORIZATION X-HTTP_AUTHORIZATION X_HTTP_AUTHORIZATION}
-
+      HEADER_FORMAT = /^(oauth|bearer)\s+(.+)/i
+      
       # Returns authorization header.
       def authorization_header
         @authorization_header ||= (
-          h = AUTHORIZATION_KEYS.inject(nil) { |auth, key| auth || @env[key] }
-          if h && h[/^(oauth|bearer)\s+(.+)/i]
-            h.gsub(/\n/, "").split[1]
+          header = AUTHORIZATION_KEYS.inject(nil) { |auth, key| auth || @env[key] }
+          
+          if header && match = header.match(HEADER_FORMAT)
+            match[2]
           else
             nil
           end
