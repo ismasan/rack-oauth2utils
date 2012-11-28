@@ -13,7 +13,7 @@ module Rack
       def authorization_header
         @authorization_header ||= (
           h = AUTHORIZATION_KEYS.inject(nil) { |auth, key| auth || @env[key] }
-          if h && h[/^oauth/i]
+          if h && h[/^(oauth|bearer)\s+(.+)/i]
             h.gsub(/\n/, "").split[1]
           else
             nil

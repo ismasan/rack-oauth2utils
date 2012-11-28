@@ -144,10 +144,41 @@ describe Rack::OAuth2Utils::Middleware do
     
   end
   
-  describe 'with valid token' do
+  describe 'with valid token as OAuth header' do
     
     before {
       header "Authorization", "OAuth aaaaa"
+    }
+    
+    describe 'public resource' do
+      before {get '/public'}
+      
+      it 'should return 200 Ok' do
+        last_response.status.must_equal 200
+      end
+      
+      it 'should return body' do
+        last_response.body.must_equal 'Hello world'
+      end
+    end
+    
+    describe 'private resource' do
+      before {get '/private'}
+      
+      it 'should return 200 Ok' do
+        last_response.status.must_equal 200
+      end
+      
+      it 'should return body' do
+        last_response.body.must_equal 'Hello world'
+      end
+    end
+  end
+  
+  describe 'with valid token as Bearer header' do
+    
+    before {
+      header "Authorization", "Bearer aaaaa"
     }
     
     describe 'public resource' do
